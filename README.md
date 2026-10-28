@@ -8,6 +8,7 @@ Snake is a simple game, and I want to learn reinforcement learning (RL) works, a
 ## Development Environment
 - VSCode
 - Python 3.14.7
+- pygame-ce v2.5.8
 
 ## Changelog
 
