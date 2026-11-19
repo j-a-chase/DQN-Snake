@@ -8,8 +8,8 @@
 
 # imports
 from .helpers import (
-    draw_square, draw_game_box, draw_game_objects, BLACK, WHITE, GRASS,
-    WIN_SIZE, OFFSET, LW, RENDER_FPS, MOVE_MS
+    draw_square, draw_game_box, BLACK, WHITE, GRASS,
+    WIN_SIZE, OFFSET, LW, RENDER_FPS, MOVE_MS, GAME_OVER_EVENT
 )
 from .objects import Snake, Coordinate
 
@@ -28,6 +28,7 @@ class Engine:
         Initializer for the Engine class.
         """
         self._running = True
+        self._is_game_over = False
         self._score = 0  # Initialize the score to 0
 
         pygame.init()
@@ -45,14 +46,15 @@ class Engine:
         accumulator: float = 0.0
         while self._running:
             self._update()
-            accumulator += self._clock.tick(RENDER_FPS)
+            if not self._is_game_over:
+                accumulator += self._clock.tick(RENDER_FPS)
 
-            while accumulator >= MOVE_MS:
-                self._snake.move()
-                accumulator -= MOVE_MS
+                while accumulator >= MOVE_MS:
+                    self._snake.move()
+                    accumulator -= MOVE_MS
 
-            self._snake.set_interpolation(accumulator / MOVE_MS)
-            self._render()
+                self._snake.set_interpolation(accumulator / MOVE_MS)
+                self._render()
 
     def _update(self: Engine) -> None:
         """
@@ -61,6 +63,9 @@ class Engine:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self._running = False
+            if event.type == GAME_OVER_EVENT:
+                self._is_game_over = True
+                print("GAME OVER!")
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     self._running = False
@@ -97,11 +102,11 @@ class Engine:
             WIN_SIZE - 2 * OFFSET - 2 * LW
         )
 
-        # Draw the boundaries of the game area
-        draw_game_box(self._screen, BLACK, OFFSET, WIN_SIZE, LW)
-
         # Draw game objects
-        draw_game_objects(self._screen, [self._snake])
+        self._snake.draw(self._screen)
+
+        # Draw the boundaries of the game area (over the snake if it collides)
+        draw_game_box(self._screen, BLACK, OFFSET, WIN_SIZE, LW)
 
         pygame.display.flip()  # Update the display with the rendered frame
 

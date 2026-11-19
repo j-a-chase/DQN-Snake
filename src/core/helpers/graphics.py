@@ -8,16 +8,16 @@
 # imports
 import pygame
 
-ColorLike = tuple[int, int, int]
+Color = tuple[int, int, int]
 
-def draw_rect(surface: pygame.Surface, color: ColorLike, x: int, y: int, width: int, height: int) -> None:
+def draw_rect(surface: pygame.Surface, color: Color, x: int, y: int, width: int, height: int) -> None:
     """
     Draws a rectangle on the given Pygame surface.
 
     :param surface: The Pygame surface on which to draw the rectangle.
     :type surface: pygame.Surface
     :param color: The color of the rectangle.
-    :type color: ColorLike
+    :type color: Color
     :param x: The x-coordinate of the top-left corner of the rectangle.
     :type x: int
     :param y: The y-coordinate of the top-left corner of the rectangle.
@@ -29,14 +29,14 @@ def draw_rect(surface: pygame.Surface, color: ColorLike, x: int, y: int, width: 
     """
     pygame.draw.rect(surface, color, (x, y, width, height))
 
-def draw_square(surface: pygame.Surface, color: ColorLike, x: int, y: int, size: int) -> None:
+def draw_square(surface: pygame.Surface, color: Color, x: int, y: int, size: int) -> None:
     """
     Draws a square on the given Pygame surface.
 
     :param surface: The Pygame surface on which to draw the square.
     :type surface: pygame.Surface
     :param color: The color of the square.
-    :type color: ColorLike
+    :type color: Color
     :param x: The x-coordinate of the top-left corner of the square.
     :type x: int
     :param y: The y-coordinate of the top-left corner of the square.
@@ -48,7 +48,7 @@ def draw_square(surface: pygame.Surface, color: ColorLike, x: int, y: int, size:
 
 def draw_game_box(
         surface: pygame.Surface,
-        color: ColorLike,
+        color: Color,
         offset: int,
         size: int,
         width: int
@@ -59,7 +59,7 @@ def draw_game_box(
     :param surface: The Pygame surface on which to draw the game box.
     :type surface: pygame.Surface
     :param color: The color of the game box.
-    :type color: ColorLike
+    :type color: Color
     :param offset: The offset of the game box from the top-left corner.
     :type offset: int
     :param size: The size of the game box.
@@ -75,18 +75,6 @@ def draw_game_box(
     draw_rect(
         surface, color, size - offset - width, offset, width, size - 2 * offset
     )  # right
-
-def draw_game_objects(surface: pygame.Surface, objects: list) -> None:
-    """
-    Draws all game objects on the given Pygame surface.
-
-    :param surface: The Pygame surface on which to draw the game objects.
-    :type surface: pygame.Surface
-    :param objects: A list of game objects to draw.
-    :type objects: list
-    """
-    for obj in objects:
-        obj.draw(surface)
 
 if __name__ == '__main__':
     assert False, "This file is not intended to be run directly."

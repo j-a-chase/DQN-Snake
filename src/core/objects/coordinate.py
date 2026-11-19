@@ -33,7 +33,7 @@ class Coordinate:
         return Coordinate(self.x + dx, self.y + dy)
 
     def validate(self: Coordinate) -> bool:
-        if 0 <= self.x < GRID_SIZE and 0 <= self.y < GRID_SIZE:
+        if 0 < self.x <= GRID_SIZE and 0 < self.y <= GRID_SIZE:
             return True
         return False
 

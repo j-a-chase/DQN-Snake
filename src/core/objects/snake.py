@@ -6,7 +6,7 @@
 ################################################################################
 
 # imports
-from ..helpers import draw_square, GREEN
+from ..helpers import draw_square, GREEN, GAME_OVER_EVENT, OFFSET
 
 from .coordinate import Coordinate
 from .game_object import GameObject
@@ -21,7 +21,7 @@ class Snake(GameObject):
             self: Snake,
             start_pos: Coordinate,
             direction: tuple[int, int],
-            size: int = 50
+            size: int = 40
         ) -> None:
         """
         Initializer for the Snake class.
@@ -38,6 +38,9 @@ class Snake(GameObject):
         """
         self._previous_body = self._body.copy()
         new_head = self._body[0].translate(self._direction[0], self._direction[1])
+        if not new_head.validate():
+            pygame.event.post(pygame.event.Event(GAME_OVER_EVENT))
+            return
         self._body = [new_head] + self._body[:-1]
 
     def draw(self: Snake, surface: pygame.Surface) -> None:
@@ -50,11 +53,13 @@ class Snake(GameObject):
         for idx, segment in enumerate(self._body):
             previous = self._previous_body[idx]
             x = round(
-                (previous.x + (segment.x - previous.x) * self._interpolation)
+                OFFSET
+                + (previous.x + (segment.x - previous.x) * self._interpolation - 1)
                 * self.size
             )
             y = round(
-                (previous.y + (segment.y - previous.y) * self._interpolation)
+                OFFSET
+                + (previous.y + (segment.y - previous.y) * self._interpolation - 1)
                 * self.size
             )
             draw_square(surface, GREEN, x, y, self.size)
