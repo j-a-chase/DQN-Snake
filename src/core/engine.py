@@ -7,28 +7,13 @@
 ################################################################################
 
 # imports
-from .helpers import draw_square, draw_game_box, draw_game_objects
+from .helpers import (
+    draw_square, draw_game_box, draw_game_objects, BLACK, WHITE, GRASS,
+    WIN_SIZE, OFFSET, LW, RENDER_FPS, MOVE_MS
+)
 from .objects import Snake, Coordinate
 
-from typing import Final
-
 import pygame
-
-# colors for the game
-BLACK: Final[tuple[int, int, int]] = (0, 0, 0)
-WHITE: Final[tuple[int, int, int]] = (255, 255, 255)
-GREEN: Final[tuple[int, int, int]] = (0, 255, 0)
-GRASS: Final[tuple[int, int, int]] = (64, 128, 128)
-
-# layout constants for the game area
-WIN_SIZE: Final[int] = 900
-OFFSET: Final[int] = 50
-LW: Final[int] = 3  # Line width for the boundaries of the game area
-
-# engine constants
-RENDER_FPS: Final[int] = 120
-MOVE_MS: Final[int] = 100 # ten cells per second (matches previous move speed)
-SNAKE_IDX: Final[int] = 0
 
 class Engine:
     """

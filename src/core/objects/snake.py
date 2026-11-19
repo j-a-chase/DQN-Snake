@@ -6,18 +6,12 @@
 ################################################################################
 
 # imports
-from ..helpers import draw_square
+from ..helpers import draw_square, GREEN
 
 from .coordinate import Coordinate
 from .game_object import GameObject
 
-from typing import Final
-
 import pygame
-
-Color = tuple[int, int, int]
-
-GREEN: Final[Color] = (0, 255, 0)
 
 class Snake(GameObject):
     """
