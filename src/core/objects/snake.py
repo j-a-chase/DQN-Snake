@@ -34,12 +34,15 @@ class Snake(GameObject):
         """
         self.size = size
         self._body = [start_pos]
+        self._previous_body = self._body.copy()
+        self._interpolation = 1.0
         self._direction = direction
 
     def move(self: Snake) -> None:
         """
         Moves the snake in the current direction.
         """
+        self._previous_body = self._body.copy()
         new_head = self._body[0].translate(self._direction[0], self._direction[1])
         self._body = [new_head] + self._body[:-1]
 
@@ -50,8 +53,17 @@ class Snake(GameObject):
         :param surface: The Pygame surface on which to draw the snake.
         :type surface: pygame.Surface
         """
-        for segment in self._body:
-            draw_square(surface, GREEN, segment.x * self.size, segment.y * self.size, self.size)
+        for idx, segment in enumerate(self._body):
+            previous = self._previous_body[idx]
+            x = round(
+                (previous.x + (segment.x - previous.x) * self._interpolation)
+                * self.size
+            )
+            y = round(
+                (previous.y + (segment.y - previous.y) * self._interpolation)
+                * self.size
+            )
+            draw_square(surface, GREEN, x, y, self.size)
 
     def get_body(self: Snake) -> list[Coordinate]:
         """
@@ -70,6 +82,15 @@ class Snake(GameObject):
         :type direction: tuple[int, int]
         """
         self._direction = direction
+
+    def set_interpolation(self: Snake, alpha: float) -> None:
+        """
+        Sets the interpolation factor for the snake's rendering.
+
+        :param alpha: The new interpolation value
+        :type alpha: float
+        """
+        self._interpolation = alpha
 
 if __name__ == '__main__':
     assert False, "This file is not intended to be run directly."

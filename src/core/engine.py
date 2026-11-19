@@ -8,9 +8,9 @@
 
 # imports
 from .helpers import draw_square, draw_game_box, draw_game_objects
-from .objects import Snake, Coordinate, GameObject
+from .objects import Snake, Coordinate
 
-from typing import Final, cast
+from typing import Final
 
 import pygame
 
@@ -26,7 +26,8 @@ OFFSET: Final[int] = 50
 LW: Final[int] = 3  # Line width for the boundaries of the game area
 
 # engine constants
-FPS: Final[int] = 10
+RENDER_FPS: Final[int] = 120
+MOVE_MS: Final[int] = 100 # ten cells per second (matches previous move speed)
 SNAKE_IDX: Final[int] = 0
 
 class Engine:
@@ -47,17 +48,23 @@ class Engine:
         self._screen = pygame.display.set_mode((WIN_SIZE, WIN_SIZE))  # Set up the game window
         self._clock = pygame.Clock()  # Create a clock object to control the game speed
 
-        self._objs: list[GameObject] = []
+        self._snake = Snake(Coordinate(5, 5), (1, 0))
 
     def run(self: Engine) -> None:
         """
         Runs the main game loop, handling updates and rendering.
         """
-        self._objs.append(Snake(Coordinate(5, 5), (1, 0)))  # Add a snake object to the game
+        accumulator: float = 0.0
         while self._running:
             self._update()
+            accumulator += self._clock.tick(RENDER_FPS)
+
+            while accumulator >= MOVE_MS:
+                self._snake.move()
+                accumulator -= MOVE_MS
+
+            self._snake.set_interpolation(accumulator / MOVE_MS)
             self._render()
-            self._clock.tick(FPS)  # Control the game speed based on the desired FPS
 
     def _update(self: Engine) -> None:
         """
@@ -70,16 +77,13 @@ class Engine:
                 if event.key == pygame.K_ESCAPE:
                     self._running = False
                 if event.key == pygame.K_DOWN:
-                    cast(Snake, self._objs[SNAKE_IDX]).set_direction((0, 1))
+                    self._snake.set_direction((0, 1))
                 if event.key == pygame.K_UP:
-                    cast(Snake, self._objs[SNAKE_IDX]).set_direction((0, -1))
+                    self._snake.set_direction((0, -1))
                 if event.key == pygame.K_RIGHT:
-                    cast(Snake, self._objs[SNAKE_IDX]).set_direction((1, 0))
+                    self._snake.set_direction((1, 0))
                 if event.key == pygame.K_LEFT:
-                    cast(Snake, self._objs[SNAKE_IDX]).set_direction((-1, 0))
-
-        for obj in self._objs:
-            obj.move()
+                    self._snake.set_direction((-1, 0))
 
     def _render(self: Engine) -> None:
         """
@@ -109,7 +113,7 @@ class Engine:
         draw_game_box(self._screen, BLACK, OFFSET, WIN_SIZE, LW)
 
         # Draw game objects
-        draw_game_objects(self._screen, self._objs)
+        draw_game_objects(self._screen, [self._snake])
 
         pygame.display.flip()  # Update the display with the rendered frame
 
