@@ -35,7 +35,10 @@ class Engine:
     Core engine class for the AI Snake game.
     Handles game logic, updates, and rendering.
     """
-    def __init__(self: Engine) -> None:
+    def __init__(
+            self: Engine,
+            start_pos: Coordinate = Coordinate(5, 5)
+        ) -> None:
         """
         Initializer for the Engine class.
         """
@@ -48,7 +51,7 @@ class Engine:
         self._screen = pygame.display.set_mode((WIN_SIZE, WIN_SIZE))  # Set up the game window
         self._clock = pygame.Clock()  # Create a clock object to control the game speed
 
-        self._snake = Snake(Coordinate(5, 5), (1, 0))
+        self._snake = Snake(start_pos, (1, 0))
 
     def run(self: Engine) -> None:
         """
