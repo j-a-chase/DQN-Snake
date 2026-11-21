@@ -9,11 +9,19 @@
 # imports
 from .helpers import (
     draw_square, draw_game_box, BLACK, WHITE, GRASS,
-    WIN_SIZE, OFFSET, LW, RENDER_FPS, MOVE_MS, GAME_OVER_EVENT
+    WIN_SIZE, OFFSET, LW, RENDER_FPS, GAME_OVER_EVENT
 )
 from .objects import Snake, Coordinate
+from .dataclasses import Configuration
 
+from pathlib import Path
 import pygame
+import json
+
+GAME_SPEED: dict[str, int] = {
+    "easy": 150,
+    "hard": 67
+}
 
 class Engine:
     """
@@ -30,6 +38,8 @@ class Engine:
         self._running = True
         self._is_game_over = False
         self._score = 0  # Initialize the score to 0
+        self._move_ms = 100
+        self._config = Configuration()
 
         pygame.init()
         pygame.display.set_caption("DQN Snake")  # Set the window title
@@ -43,18 +53,35 @@ class Engine:
         """
         Runs the main game loop, handling updates and rendering.
         """
+        self._load_config()
+
+        if self._config.difficulty != "normal":
+            self._move_ms = GAME_SPEED[self._config.difficulty]
+
         accumulator: float = 0.0
         while self._running:
             self._update()
             if not self._is_game_over:
                 accumulator += self._clock.tick(RENDER_FPS)
 
-                while accumulator >= MOVE_MS:
+                while accumulator >= self._move_ms:
                     self._snake.move()
-                    accumulator -= MOVE_MS
+                    accumulator -= self._move_ms
 
-                self._snake.set_interpolation(accumulator / MOVE_MS)
+                self._snake.set_interpolation(accumulator / self._move_ms)
                 self._render()
+
+    def _load_config(self: Engine) -> None:
+        """
+        Loads the game configuration.
+        """
+        try:
+            with open(Path("config/config.json")) as cf:
+                data = json.loads(cf.read())
+                self._config.load(data)
+        except json.JSONDecodeError:
+            print("Error loading configuration data!")
+            raise
 
     def _update(self: Engine) -> None:
         """
