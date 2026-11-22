@@ -81,14 +81,19 @@ class Snake(GameObject):
         self.body.append(tail)
         self._previous_body.append(tail)
 
-    def set_direction(self: Snake, direction: tuple[int, int]) -> None:
+    @property
+    def direction(self: Snake):
+        return self._direction
+
+    @direction.setter
+    def direction(self: Snake, val: tuple[int, int]) -> None:
         """
         Sets the direction of the snake.
 
         :param direction: The new direction for the snake.
         :type direction: tuple[int, int]
         """
-        self._direction = direction
+        self._direction = val
 
     def set_interpolation(self: Snake, alpha: float) -> None:
         """
