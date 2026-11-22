@@ -75,8 +75,9 @@ class Engine:
                 while accumulator >= self._move_ms:
                     self._snake.move()
                     accumulator -= self._move_ms
-                    if self._snake.get_body()[0] == self._food.pos:
+                    if self._snake.head() == self._food.pos:
                         self._score += 100
+                        self._snake.extend()
                         self._food.move()
 
                 self._snake.set_interpolation(accumulator / self._move_ms)

@@ -37,7 +37,7 @@ class Snake(GameObject):
         Moves the snake in the current direction.
         """
         self._previous_body = self._body.copy()
-        new_head = self._body[0].translate(self._direction[0], self._direction[1])
+        new_head = self.head().translate(self._direction[0], self._direction[1])
         if not new_head.validate():
             pygame.event.post(pygame.event.Event(GAME_OVER_EVENT))
             return
@@ -64,14 +64,22 @@ class Snake(GameObject):
             )
             draw_square(surface, Colors.SNAKE, x, y, self.size)
 
-    def get_body(self: Snake) -> list[Coordinate]:
+    def head(self: Snake) -> Coordinate:
         """
         Returns the body of the snake as a list of Coordinate instances.
 
         :return: A list of Coordinate instances representing the snake's body.
         :rtype: list[Coordinate]
         """
-        return self._body
+        return self._body[0]
+
+    def extend(self: Snake) -> None:
+        """
+        Extends the Snake by one segment.
+        """
+        tail = self._previous_body[-1]
+        self._body.append(tail)
+        self._previous_body.append(tail)
 
     def set_direction(self: Snake, direction: tuple[int, int]) -> None:
         """
