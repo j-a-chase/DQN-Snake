@@ -131,6 +131,9 @@ class Engine:
                         self._snake.set_direction((-1, 0))
 
             if self.state == State.START and event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    self.state = State.EXIT
+                    return
                 if event.key == pygame.K_SPACE:
                     self.state = State.RUNNING
 
@@ -165,12 +168,17 @@ class Engine:
             # Draw the boundaries of the game area (over the snake if it collides)
             draw_game_box(self._screen, Colors.BLACK, OFFSET, WIN_SIZE, LW)
         elif self.state == State.START:
-            msg = font.render("Press SPACE to play!", True, Colors.BLACK.value)
-            self._screen.blit(msg, msg.get_rect(center=(400, 300)))
+            msg = font.render((txt := "Press SPACE to play!"), True, Colors.BLACK.value)
+            msg_w = WIN_SIZE - len(txt)
+            self._screen.blit(msg, msg.get_rect(center=(msg_w / 2, 300)))
         elif self.state == State.MENU:
             mouse_pos = pygame.mouse.get_pos()
             draw_button(self._screen, font, self._play_btn, "Play", mouse_pos)
             draw_button(self._screen, font, self._quit_btn, "Quit", mouse_pos)
+        elif self.state == State.GAME_OVER:
+            msg = font.render((txt := "Game Over! Press 'R' to restart!"), True, Colors.BLACK.value)
+            msg_w = WIN_SIZE - len(txt)
+            self._screen.blit(msg, msg.get_rect(center=(msg_w / 2, 300)))
 
         pygame.display.flip()  # Update the display with the rendered frame
 
