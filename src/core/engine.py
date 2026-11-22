@@ -47,6 +47,9 @@ class Engine:
         self._screen = pygame.display.set_mode((WIN_SIZE, WIN_SIZE))  # Set up the game window
         self._clock = pygame.Clock()  # Create a clock object to control the game speed
 
+        self._bg = Colors.BG_COLOR
+        self._fg = Colors.TXT_COLOR
+
         self._snake = Snake(snake_pos, (1, 0))
         self._food = Food(food_pos)
 
@@ -58,6 +61,9 @@ class Engine:
 
         if self._config.difficulty != "normal":
             self._move_ms = GAME_SPEED[self._config.difficulty]
+        if self._config.theme == "dark":
+            self._bg = Colors.DARK_BG_COLOR
+            self._fg = Colors.DARK_TXT_COLOR
 
         # (x, y, width, height)
         self._play_btn = pygame.Rect(350, 220, 200, 60)
@@ -156,15 +162,15 @@ class Engine:
         """
         Renders the game.
         """
-        self._screen.fill(Colors.BG_COLOR.value)
+        self._screen.fill(self._bg.value)
 
         # Draw the Game Title at the top of the screen, left aligned, offset
         font = pygame.font.SysFont("Segoe UI Semibold", 40)
-        title_text = font.render("DQN Snake", True, Colors.TXT_COLOR.value)
+        title_text = font.render("DQN Snake", True, self._fg.value)
         self._screen.blit(title_text, (OFFSET, 0))
 
         # Draw the score opposite the title with offset
-        score_text = font.render(f"Score: {self._score}", True, Colors.TXT_COLOR.value)
+        score_text = font.render(f"Score: {self._score}", True, self._fg.value)
         self._screen.blit(score_text, (WIN_SIZE - score_text.get_width() - OFFSET, 0))
 
         if self.state in [ State.RUNNING, State.GAME_OVER ]:
@@ -182,15 +188,15 @@ class Engine:
             self._food.draw(self._screen)
 
             # Draw the boundaries of the game area (over the snake if it collides)
-            draw_game_box(self._screen, Colors.TXT_COLOR, OFFSET, WIN_SIZE, LW)
+            draw_game_box(self._screen, self._fg, OFFSET, WIN_SIZE, LW)
 
             # draw game over text over the ending game state
             if self.state == State.GAME_OVER:
-                msg = font.render((txt := "Game Over! Press 'R' to restart!"), True, Colors.TXT_COLOR.value)
+                msg = font.render((txt := "Game Over! Press 'R' to restart!"), True, self._fg.value)
                 msg_w = WIN_SIZE - len(txt)
                 self._screen.blit(msg, msg.get_rect(center=(msg_w / 2, 300)))
         elif self.state == State.START:
-            msg = font.render((txt := "Press SPACE to play!"), True, Colors.TXT_COLOR.value)
+            msg = font.render((txt := "Press SPACE to play!"), True, self._fg.value)
             msg_w = WIN_SIZE - len(txt)
             self._screen.blit(msg, msg.get_rect(center=(msg_w / 2, 300)))
         elif self.state == State.MENU:

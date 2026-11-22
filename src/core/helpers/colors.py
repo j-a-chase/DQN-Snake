@@ -11,6 +11,8 @@ from enum import Enum
 class Colors(Enum):
     TXT_COLOR = (0, 0, 0)
     BG_COLOR = (255, 255, 255)
+    DARK_TXT_COLOR = (255, 255, 255)
+    DARK_BG_COLOR = (0, 0, 0)
     SNAKE = (0, 255, 0)
     FOOD = (128, 128, 0)
     GRASS = (64, 128, 128)
