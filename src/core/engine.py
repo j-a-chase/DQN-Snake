@@ -8,8 +8,8 @@
 
 # imports
 from .helpers import (
-    draw_square, draw_game_box, draw_button, BLACK, WHITE, GRASS,
-    WIN_SIZE, OFFSET, LW, RENDER_FPS, GAME_OVER_EVENT, State
+    Colors, draw_square, draw_game_box, draw_button, WIN_SIZE, OFFSET, LW,
+    RENDER_FPS, GAME_OVER_EVENT, GAME_SPEED, State
 )
 from .objects import Snake, Coordinate
 from .dataclasses import Configuration
@@ -17,11 +17,6 @@ from .dataclasses import Configuration
 from pathlib import Path
 import pygame
 import json
-
-GAME_SPEED: dict[str, int] = {
-    "easy": 150,
-    "hard": 67
-}
 
 class Engine:
     """
@@ -143,22 +138,22 @@ class Engine:
         """
         Renders the game.
         """
-        self._screen.fill(WHITE)
+        self._screen.fill(Colors.WHITE.value)
 
         # Draw the Game Title at the top of the screen, left aligned, offset
         font = pygame.font.SysFont("Segoe UI Semibold", 40)
-        title_text = font.render("DQN Snake", True, BLACK)
+        title_text = font.render("DQN Snake", True, Colors.BLACK.value)
         self._screen.blit(title_text, (OFFSET, 0))
 
         # Draw the score opposite the title with offset
-        score_text = font.render(f"Score: {self._score}", True, BLACK)
+        score_text = font.render(f"Score: {self._score}", True, Colors.BLACK.value)
         self._screen.blit(score_text, (WIN_SIZE - score_text.get_width() - OFFSET, 0))
 
         if self.state == State.RUNNING:
             # Draw the background and static elements of the game area (grass field)
             draw_square(
                 self._screen,
-                GRASS,
+                Colors.GRASS,
                 OFFSET + LW,
                 OFFSET + LW,
                 WIN_SIZE - 2 * OFFSET - 2 * LW
@@ -168,9 +163,9 @@ class Engine:
             self._snake.draw(self._screen)
 
             # Draw the boundaries of the game area (over the snake if it collides)
-            draw_game_box(self._screen, BLACK, OFFSET, WIN_SIZE, LW)
+            draw_game_box(self._screen, Colors.BLACK, OFFSET, WIN_SIZE, LW)
         elif self.state == State.START:
-            msg = font.render("Press SPACE to play!", True, BLACK)
+            msg = font.render("Press SPACE to play!", True, Colors.BLACK.value)
             self._screen.blit(msg, msg.get_rect(center=(400, 300)))
         elif self.state == State.MENU:
             mouse_pos = pygame.mouse.get_pos()

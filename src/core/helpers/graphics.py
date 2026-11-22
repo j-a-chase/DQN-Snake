@@ -6,15 +6,11 @@
 ################################################################################
 
 # imports
+from .colors import Colors
+
 import pygame
 
-Color = tuple[int, int, int]
-
-WHITE = (255, 255, 255)
-BTN_COLOR = (60, 60, 60)
-HOVER = (128, 128, 128)
-
-def draw_rect(surface: pygame.Surface, color: Color, x: int, y: int, width: int, height: int) -> None:
+def draw_rect(surface: pygame.Surface, color: Colors, x: int, y: int, width: int, height: int) -> None:
     """
     Draws a rectangle on the given Pygame surface.
 
@@ -31,9 +27,9 @@ def draw_rect(surface: pygame.Surface, color: Color, x: int, y: int, width: int,
     :param height: The height of the rectangle.
     :type height: int
     """
-    pygame.draw.rect(surface, color, (x, y, width, height))
+    pygame.draw.rect(surface, color.value, (x, y, width, height))
 
-def draw_square(surface: pygame.Surface, color: Color, x: int, y: int, size: int) -> None:
+def draw_square(surface: pygame.Surface, color: Colors, x: int, y: int, size: int) -> None:
     """
     Draws a square on the given Pygame surface.
 
@@ -52,7 +48,7 @@ def draw_square(surface: pygame.Surface, color: Color, x: int, y: int, size: int
 
 def draw_game_box(
         surface: pygame.Surface,
-        color: Color,
+        color: Colors,
         offset: int,
         size: int,
         width: int
@@ -97,10 +93,10 @@ def draw_button(
     :param mouse_pos: A tuple containing the x and y coordinates of the mouse
     :type mouse_pos: tuple[int, int]
     """
-    color = HOVER if btn.collidepoint(mouse_pos) else BTN_COLOR
-    pygame.draw.rect(screen, color, btn, border_radius=8)
+    color = Colors.HOVER if btn.collidepoint(mouse_pos) else Colors.BTN
+    pygame.draw.rect(screen, color.value, btn, border_radius=8)
 
-    btn_text = font.render(txt, True, WHITE)
+    btn_text = font.render(txt, True, Colors.WHITE.value)
     screen.blit(btn_text, btn_text.get_rect(center=btn.center))
 
 if __name__ == '__main__':

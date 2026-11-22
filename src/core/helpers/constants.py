@@ -10,12 +10,6 @@ from typing import Final
 
 import pygame
 
-# colors
-BLACK: Final[tuple[int, int, int]] = (0, 0, 0)
-WHITE: Final[tuple[int, int, int]] = (255, 255, 255)
-GREEN: Final[tuple[int, int, int]] = (0, 255, 0)
-GRASS: Final[tuple[int, int, int]] = (64, 128, 128)
-
 # rendering
 WIN_SIZE: Final[int] = 900
 OFFSET: Final[int] = 50
@@ -26,7 +20,14 @@ RENDER_FPS: Final[int] = 120
 MOVE_MS: Final[int] = 100 # ten cells per second (matches previous move speed)
 GRID_SIZE: Final[int] = 20
 
+# custom events
 GAME_OVER_EVENT: Final[int] = pygame.USEREVENT + 1
+
+# configuration
+GAME_SPEED: dict[str, int] = {
+    "easy": 150,
+    "hard": 67
+}
 
 if __name__ == '__main__':
     assert False, "This file is not intended to be run directly."

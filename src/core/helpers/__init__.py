@@ -1,12 +1,13 @@
-from .graphics import draw_rect, draw_square, draw_game_box, draw_button
+from .colors import Colors
 from .constants import (
-    BLACK, WHITE, GREEN, GRASS, WIN_SIZE, OFFSET, LW, RENDER_FPS, MOVE_MS,
-    GRID_SIZE, GAME_OVER_EVENT
+    WIN_SIZE, OFFSET, LW, RENDER_FPS, MOVE_MS,
+    GRID_SIZE, GAME_OVER_EVENT, GAME_SPEED
 )
+from .graphics import draw_rect, draw_square, draw_game_box, draw_button
 from .game_state import State
 
 __all__ = [
-    "draw_rect", "draw_square", "draw_game_box", "draw_button", "BLACK",
-    "WHITE", "GREEN", "GRASS", "WIN_SIZE", "OFFSET", "LW", "RENDER_FPS",
-    "MOVE_MS", "GRID_SIZE", "GAME_OVER_EVENT", "State"
+    "Colors", "WIN_SIZE", "OFFSET", "LW", "RENDER_FPS", "MOVE_MS", "GRID_SIZE",
+    "GAME_OVER_EVENT", "GAME_SPEED", "draw_rect", "draw_square",
+    "draw_game_box", "draw_button", "State"
 ]
