@@ -10,6 +10,10 @@ import pygame
 
 Color = tuple[int, int, int]
 
+WHITE = (255, 255, 255)
+BTN_COLOR = (60, 60, 60)
+HOVER = (128, 128, 128)
+
 def draw_rect(surface: pygame.Surface, color: Color, x: int, y: int, width: int, height: int) -> None:
     """
     Draws a rectangle on the given Pygame surface.
@@ -75,6 +79,29 @@ def draw_game_box(
     draw_rect(
         surface, color, size - offset - width, offset, width, size - 2 * offset
     )  # right
+
+def draw_button(
+        screen: pygame.Surface, font: pygame.Font, btn: pygame.Rect,
+        txt: str, mouse_pos: tuple[int, int]) -> None:
+    """
+    Draws a menu button on the screen.
+
+    :param screen: The Pygame surface to draw the button on.
+    :type screen: pygame.Surface
+    :param font: The font used to render the Button text
+    :type font: pygame.Font
+    :param btn: The button rectangle object to draw.
+    :type btn: pygame.Rect
+    :param txt: The text to render on the button.
+    :type txt: str
+    :param mouse_pos: A tuple containing the x and y coordinates of the mouse
+    :type mouse_pos: tuple[int, int]
+    """
+    color = HOVER if btn.collidepoint(mouse_pos) else BTN_COLOR
+    pygame.draw.rect(screen, color, btn, border_radius=8)
+
+    btn_text = font.render(txt, True, WHITE)
+    screen.blit(btn_text, btn_text.get_rect(center=btn.center))
 
 if __name__ == '__main__':
     assert False, "This file is not intended to be run directly."
