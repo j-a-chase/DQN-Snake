@@ -11,7 +11,8 @@ from enum import Enum
 class Colors(Enum):
     BLACK = (0, 0, 0)
     WHITE = (255, 255, 255)
-    GREEN = (0, 255, 0)
+    SNAKE = (0, 255, 0)
+    FOOD = (128, 128, 0)
     GRASS = (64, 128, 128)
     BTN   = (60, 60, 60)
     HOVER = (128, 128, 128)

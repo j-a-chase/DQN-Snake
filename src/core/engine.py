@@ -11,7 +11,7 @@ from .helpers import (
     Colors, draw_square, draw_game_box, draw_button, WIN_SIZE, OFFSET, LW,
     RENDER_FPS, GAME_OVER_EVENT, GAME_SPEED, State
 )
-from .objects import Snake, Coordinate
+from .objects import Snake, Coordinate, Food
 from .dataclasses import Configuration
 
 from pathlib import Path
@@ -25,10 +25,16 @@ class Engine:
     """
     def __init__(
             self: Engine,
-            start_pos: Coordinate = Coordinate(5, 5)
+            snake_pos: Coordinate = Coordinate(5, 5),
+            food_pos: Coordinate = Coordinate(8, 8)
         ) -> None:
         """
         Initializer for the Engine class.
+
+        :param snake_pos: Starting position for the snake
+        :type snake_pos: Coordinate
+        :param food_pos: Starting position for the food
+        :type food_pos: Coordinate
         """
         self.state: State = State.START
         self._score = 0  # Initialize the score to 0
@@ -41,7 +47,8 @@ class Engine:
         self._screen = pygame.display.set_mode((WIN_SIZE, WIN_SIZE))  # Set up the game window
         self._clock = pygame.Clock()  # Create a clock object to control the game speed
 
-        self._snake = Snake(start_pos, (1, 0))
+        self._snake = Snake(snake_pos, (1, 0))
+        self._food = Food(food_pos)
 
     def run(self: Engine) -> None:
         """
@@ -68,6 +75,9 @@ class Engine:
                 while accumulator >= self._move_ms:
                     self._snake.move()
                     accumulator -= self._move_ms
+                    if self._snake.get_body()[0] == self._food.pos:
+                        self._score += 100
+                        self._food.move()
 
                 self._snake.set_interpolation(accumulator / self._move_ms)
             
@@ -107,6 +117,7 @@ class Engine:
                 if event.key == pygame.K_r:
                     self.state = State.START
                     self._snake = Snake(Coordinate(5, 5), (1, 0))
+                    self._food = Food(Coordinate(8, 8))
                     self._score = 0
 
             if self.state == State.MENU and event.type == pygame.MOUSEBUTTONDOWN:
@@ -164,6 +175,7 @@ class Engine:
 
             # Draw game objects
             self._snake.draw(self._screen)
+            self._food.draw(self._screen)
 
             # Draw the boundaries of the game area (over the snake if it collides)
             draw_game_box(self._screen, Colors.BLACK, OFFSET, WIN_SIZE, LW)

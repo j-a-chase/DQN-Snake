@@ -62,7 +62,7 @@ class Snake(GameObject):
                 + (previous.y + (segment.y - previous.y) * self._interpolation - 1)
                 * self.size
             )
-            draw_square(surface, Colors.GREEN, x, y, self.size)
+            draw_square(surface, Colors.SNAKE, x, y, self.size)
 
     def get_body(self: Snake) -> list[Coordinate]:
         """
