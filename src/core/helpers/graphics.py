@@ -78,7 +78,8 @@ def draw_game_box(
 
 def draw_button(
         screen: pygame.Surface, font: pygame.Font, btn: pygame.Rect,
-        txt: str, mouse_pos: tuple[int, int]) -> None:
+        txt: str, mouse_pos: tuple[int, int]
+    ) -> None:
     """
     Draws a menu button on the screen.
 
@@ -96,7 +97,7 @@ def draw_button(
     color = Colors.HOVER if btn.collidepoint(mouse_pos) else Colors.BTN
     pygame.draw.rect(screen, color.value, btn, border_radius=8)
 
-    btn_text = font.render(txt, True, Colors.WHITE.value)
+    btn_text = font.render(txt, True, Colors.BG_COLOR.value)
     screen.blit(btn_text, btn_text.get_rect(center=btn.center))
 
 if __name__ == '__main__':

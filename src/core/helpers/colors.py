@@ -9,8 +9,8 @@
 from enum import Enum
 
 class Colors(Enum):
-    BLACK = (0, 0, 0)
-    WHITE = (255, 255, 255)
+    TXT_COLOR = (0, 0, 0)
+    BG_COLOR = (255, 255, 255)
     SNAKE = (0, 255, 0)
     FOOD = (128, 128, 0)
     GRASS = (64, 128, 128)
