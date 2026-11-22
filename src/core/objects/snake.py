@@ -27,8 +27,8 @@ class Snake(GameObject):
         Initializer for the Snake class.
         """
         self.size = size
-        self._body = [start_pos]
-        self._previous_body = self._body.copy()
+        self.body = [start_pos]
+        self._previous_body = self.body.copy()
         self._interpolation = 1.0
         self._direction = direction
 
@@ -36,12 +36,12 @@ class Snake(GameObject):
         """
         Moves the snake in the current direction.
         """
-        self._previous_body = self._body.copy()
+        self._previous_body = self.body.copy()
         new_head = self.head().translate(self._direction[0], self._direction[1])
         if not new_head.validate():
             pygame.event.post(pygame.event.Event(GAME_OVER_EVENT))
             return
-        self._body = [new_head] + self._body[:-1]
+        self.body = [new_head] + self.body[:-1]
 
     def draw(self: Snake, surface: pygame.Surface) -> None:
         """
@@ -50,7 +50,7 @@ class Snake(GameObject):
         :param surface: The Pygame surface on which to draw the snake.
         :type surface: pygame.Surface
         """
-        for idx, segment in enumerate(self._body):
+        for idx, segment in enumerate(self.body):
             previous = self._previous_body[idx]
             x = round(
                 OFFSET
@@ -71,14 +71,14 @@ class Snake(GameObject):
         :return: A list of Coordinate instances representing the snake's body.
         :rtype: list[Coordinate]
         """
-        return self._body[0]
+        return self.body[0]
 
     def extend(self: Snake) -> None:
         """
         Extends the Snake by one segment.
         """
         tail = self._previous_body[-1]
-        self._body.append(tail)
+        self.body.append(tail)
         self._previous_body.append(tail)
 
     def set_direction(self: Snake, direction: tuple[int, int]) -> None:

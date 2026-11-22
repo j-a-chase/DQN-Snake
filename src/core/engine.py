@@ -79,6 +79,9 @@ class Engine:
                         self._score += 100
                         self._snake.extend()
                         self._food.move()
+                    if len(self._snake.body) > 1 and self._snake.head() in self._snake.body[1:]:
+                        self.state = State.GAME_OVER
+                        break
 
                 self._snake.set_interpolation(accumulator / self._move_ms)
             
