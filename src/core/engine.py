@@ -14,6 +14,7 @@ from .helpers import (
 from .objects import Snake, Coordinate, Food
 from .dataclasses import Configuration
 
+from typing import Optional
 from pathlib import Path
 import pygame
 import json
@@ -53,6 +54,8 @@ class Engine:
         self._snake = Snake(snake_pos, (1, 0))
         self._food = Food(food_pos)
 
+        self._queued_direction: Optional[tuple[int, int]] = None
+
     def run(self: Engine) -> None:
         """
         Runs the main game loop, handling updates and rendering.
@@ -79,6 +82,10 @@ class Engine:
             if self.state == State.RUNNING:
                 accumulator += tick
                 while accumulator >= self._move_ms:
+                    if self._queued_direction is not None:
+                        self._snake.direction = self._queued_direction
+                        self._queued_direction = None
+
                     self._snake.move()
                     accumulator -= self._move_ms
                     if self._snake.head() == self._food.pos:
@@ -111,6 +118,13 @@ class Engine:
         """
         mouse_pos = pygame.mouse.get_pos()
 
+        directions = {
+            pygame.K_DOWN: (0, 1),
+            pygame.K_UP: (0, -1),
+            pygame.K_RIGHT: (1, 0),
+            pygame.K_LEFT: (-1, 0)
+        }
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.state = State.EXIT
@@ -129,6 +143,7 @@ class Engine:
                     self._snake = Snake(Coordinate(5, 5), (1, 0))
                     self._food = Food(Coordinate(8, 8))
                     self._score = 0
+                    self._queued_direction = None
 
             if self.state == State.MENU and event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1: # left click
@@ -142,14 +157,12 @@ class Engine:
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
                         self.state = State.MENU
-                    if event.key == pygame.K_DOWN:
-                        self._snake.set_direction((0, 1))
-                    if event.key == pygame.K_UP:
-                        self._snake.set_direction((0, -1))
-                    if event.key == pygame.K_RIGHT:
-                        self._snake.set_direction((1, 0))
-                    if event.key == pygame.K_LEFT:
-                        self._snake.set_direction((-1, 0))
+                    candidate = directions.get(event.key)
+                    if candidate and self._queued_direction is None:
+                        current = self._snake.direction
+                        opposite = (-current[0], -current[1])
+                        if candidate != current and candidate != opposite:
+                            self._queued_direction = candidate
 
             if self.state == State.START and event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
