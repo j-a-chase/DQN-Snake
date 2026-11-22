@@ -8,8 +8,8 @@
 
 # imports
 from .helpers import (
-    draw_square, draw_game_box, BLACK, WHITE, GRASS,
-    WIN_SIZE, OFFSET, LW, RENDER_FPS, GAME_OVER_EVENT
+    draw_square, draw_game_box, draw_button, BLACK, WHITE, GRASS,
+    WIN_SIZE, OFFSET, LW, RENDER_FPS, GAME_OVER_EVENT, State
 )
 from .objects import Snake, Coordinate
 from .dataclasses import Configuration
@@ -35,8 +35,7 @@ class Engine:
         """
         Initializer for the Engine class.
         """
-        self._running = True
-        self._is_game_over = False
+        self.state: State = State.START
         self._score = 0  # Initialize the score to 0
         self._move_ms = 100
         self._config = Configuration()
@@ -58,18 +57,26 @@ class Engine:
         if self._config.difficulty != "normal":
             self._move_ms = GAME_SPEED[self._config.difficulty]
 
-        accumulator: float = 0.0
-        while self._running:
-            self._update()
-            if not self._is_game_over:
-                accumulator += self._clock.tick(RENDER_FPS)
+        # (x, y, width, height)
+        self._play_btn = pygame.Rect(350, 220, 200, 60)
+        self._quit_btn = pygame.Rect(350, 310, 200, 60)
 
+        accumulator: float = 0.0
+        while True:
+            self._update()
+            tick = self._clock.tick(RENDER_FPS)
+            if self.state == State.EXIT:
+                return
+            
+            if self.state == State.RUNNING:
+                accumulator += tick
                 while accumulator >= self._move_ms:
                     self._snake.move()
                     accumulator -= self._move_ms
 
                 self._snake.set_interpolation(accumulator / self._move_ms)
-                self._render()
+            
+            self._render()
 
     def _load_config(self: Engine) -> None:
         """
@@ -87,23 +94,50 @@ class Engine:
         """
         Updates the game state.
         """
+        mouse_pos = pygame.mouse.get_pos()
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                self._running = False
+                self.state = State.EXIT
+                return
+            
             if event.type == GAME_OVER_EVENT:
-                self._is_game_over = True
-                print("GAME OVER!")
-            if event.type == pygame.KEYDOWN:
+                self.state = State.GAME_OVER
+                return
+
+            if self.state == State.GAME_OVER and event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
-                    self._running = False
-                if event.key == pygame.K_DOWN:
-                    self._snake.set_direction((0, 1))
-                if event.key == pygame.K_UP:
-                    self._snake.set_direction((0, -1))
-                if event.key == pygame.K_RIGHT:
-                    self._snake.set_direction((1, 0))
-                if event.key == pygame.K_LEFT:
-                    self._snake.set_direction((-1, 0))
+                    self.state = State.EXIT
+                    return
+                if event.key == pygame.K_r:
+                    self.state = State.START
+                    self._snake = Snake(Coordinate(5, 5), (1, 0))
+                    self._score = 0
+
+            if self.state == State.MENU and event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 1: # left click
+                    if self._play_btn.collidepoint(mouse_pos):
+                        self.state = State.RUNNING
+                    elif self._quit_btn.collidepoint(mouse_pos):
+                        self.state = State.EXIT
+                        return
+
+            if self.state == State.RUNNING:
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        self.state = State.MENU
+                    if event.key == pygame.K_DOWN:
+                        self._snake.set_direction((0, 1))
+                    if event.key == pygame.K_UP:
+                        self._snake.set_direction((0, -1))
+                    if event.key == pygame.K_RIGHT:
+                        self._snake.set_direction((1, 0))
+                    if event.key == pygame.K_LEFT:
+                        self._snake.set_direction((-1, 0))
+
+            if self.state == State.START and event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
+                    self.state = State.RUNNING
 
     def _render(self: Engine) -> None:
         """
@@ -120,20 +154,28 @@ class Engine:
         score_text = font.render(f"Score: {self._score}", True, BLACK)
         self._screen.blit(score_text, (WIN_SIZE - score_text.get_width() - OFFSET, 0))
 
-        # Draw the background and static elements of the game area (grass field)
-        draw_square(
-            self._screen,
-            GRASS,
-            OFFSET + LW,
-            OFFSET + LW,
-            WIN_SIZE - 2 * OFFSET - 2 * LW
-        )
+        if self.state == State.RUNNING:
+            # Draw the background and static elements of the game area (grass field)
+            draw_square(
+                self._screen,
+                GRASS,
+                OFFSET + LW,
+                OFFSET + LW,
+                WIN_SIZE - 2 * OFFSET - 2 * LW
+            )
 
-        # Draw game objects
-        self._snake.draw(self._screen)
+            # Draw game objects
+            self._snake.draw(self._screen)
 
-        # Draw the boundaries of the game area (over the snake if it collides)
-        draw_game_box(self._screen, BLACK, OFFSET, WIN_SIZE, LW)
+            # Draw the boundaries of the game area (over the snake if it collides)
+            draw_game_box(self._screen, BLACK, OFFSET, WIN_SIZE, LW)
+        elif self.state == State.START:
+            msg = font.render("Press SPACE to play!", True, BLACK)
+            self._screen.blit(msg, msg.get_rect(center=(400, 300)))
+        elif self.state == State.MENU:
+            mouse_pos = pygame.mouse.get_pos()
+            draw_button(self._screen, font, self._play_btn, "Play", mouse_pos)
+            draw_button(self._screen, font, self._quit_btn, "Quit", mouse_pos)
 
         pygame.display.flip()  # Update the display with the rendered frame
 
