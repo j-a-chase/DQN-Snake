@@ -1,2 +1,5 @@
 # python files
 __pycache__/
+
+# game-generated files
+hss

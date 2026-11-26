@@ -12,7 +12,9 @@ def main() -> None:
     """
     Main Program Entry Point
     """
-    Engine().run()
+    e = Engine()
+    e.run()
+    e.update_high_score()
 
 if __name__ == '__main__':
     main()

@@ -37,8 +37,11 @@ class Engine:
         :param food_pos: Starting position for the food
         :type food_pos: Coordinate
         """
+        self._score_path = Path("config/hss")
+
         self.state: State = State.START
         self._score = 0  # Initialize the score to 0
+        self._high_score = int.from_bytes(self._score_path.read_bytes()) if self._score_path.exists() else 0
         self._move_ms = 100
         self._config = Configuration()
 
@@ -90,6 +93,8 @@ class Engine:
                     accumulator -= self._move_ms
                     if self._snake.head() == self._food.pos:
                         self._score += 100
+                        if self._score > self._high_score:
+                            self._high_score = self._score
                         self._snake.extend()
                         self._food.move()
                     if len(self._snake.body) > 1 and self._snake.head() in self._snake.body[1:]:
@@ -99,6 +104,15 @@ class Engine:
                 self._snake.set_interpolation(accumulator / self._move_ms)
             
             self._render()
+
+    def update_high_score(self: Engine) -> None:
+        if not (score_path := Path("config/hss")).exists():
+            score_path.write_bytes(self._high_score.to_bytes(64))
+            return
+
+        previous = int.from_bytes(score_path.read_bytes())
+        if previous < self._high_score:
+            score_path.write_bytes(self._high_score.to_bytes(64))
 
     def _load_config(self: Engine) -> None:
         """
@@ -181,6 +195,10 @@ class Engine:
         font = pygame.font.SysFont("Segoe UI Semibold", 40)
         title_text = font.render("DQN Snake", True, self._fg.value)
         self._screen.blit(title_text, (OFFSET, 0))
+
+        # Draw the hi-score
+        hi_score_text = font.render(f"High Score: {self._high_score}", True, self._fg.value)
+        self._screen.blit(hi_score_text, (OFFSET + OFFSET + title_text.get_width(), 0))
 
         # Draw the score opposite the title with offset
         score_text = font.render(f"Score: {self._score}", True, self._fg.value)
